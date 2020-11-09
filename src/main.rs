@@ -2,6 +2,7 @@
 extern crate diesel;
 extern crate env_logger;
 extern crate serde_derive;
+extern crate log;
 
 use actix_web::{
     dev::ServiceRequest, middleware::Logger, web, App, Error, HttpResponse, HttpServer,
@@ -66,7 +67,8 @@ async fn main() -> std::io::Result<()> {
                     .service(controllers::user_controller::get_users)
                     .service(controllers::user_controller::get_user)
                     .service(controllers::auth_controller::me)
-                    .service(controllers::user_controller::delete_user),
+                    .service(controllers::user_controller::delete_user)
+                    .service(controllers::post_controller::get_posts),
             )
             .wrap(Logger::default())
             .data(pool.clone())

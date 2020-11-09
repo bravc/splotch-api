@@ -1,0 +1,8 @@
+-- Your SQL goes here
+CREATE TABLE posts (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users ON DELETE CASCADE,
+  title VARCHAR NOT NULL,
+  content VARCHAR NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+)

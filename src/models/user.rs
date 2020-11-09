@@ -7,7 +7,7 @@ use actix_web_httpauth::extractors::bearer::BearerAuth;
 use chrono::NaiveDateTime;
 use futures::future::{err, ok, Ready};
 use jsonwebtoken::{decode, DecodingKey, Validation};
-use log::error;
+use log::debug;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Identifiable, Queryable)]
@@ -26,7 +26,7 @@ impl FromRequest for User {
     type Config = ();
 
     fn from_request(req: &HttpRequest, payload: &mut dev::Payload) -> Self::Future {
-        error!("chillin");
+        debug!("chillin");
         let pool = req.app_data::<web::Data<Pool>>().unwrap();
         let conn = pool.get().unwrap();
 
@@ -43,7 +43,7 @@ impl FromRequest for User {
             match cred {
                 Ok(token) => match user_dsl.find(token.claims.sub).first(&conn) {
                     Ok(user) => ok(user),
-                    Err(_) => err(HttpResponse::InternalServerError().into()),
+                    Err(e) => err(HttpResponse::InternalServerError().body(e.to_string()).into()),
                 },
                 Err(e) => err(HttpResponse::Unauthorized().body(e.to_string()).into()),
             }
