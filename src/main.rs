@@ -65,6 +65,7 @@ async fn main() -> std::io::Result<()> {
                     .wrap(auth)
                     .service(controllers::user_controller::get_users)
                     .service(controllers::user_controller::get_user)
+                    .service(controllers::auth_controller::me)
                     .service(controllers::user_controller::delete_user),
             )
             .wrap(Logger::default())

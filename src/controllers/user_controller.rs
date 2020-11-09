@@ -1,10 +1,8 @@
-use crate::diesel::ExpressionMethods;
 use crate::diesel::{QueryDsl, RunQueryDsl};
 use crate::models::user::User;
 use crate::schema::users::dsl::*;
 use crate::Pool;
 use actix_web::{delete, get, web, HttpResponse, Responder};
-
 use diesel::dsl::delete;
 use diesel::result::Error as DieselError;
 use std::vec::Vec;
