@@ -9,16 +9,17 @@ edition = "2018"
 [dependencies]
 actix-web = "3.0"
 listenfd = "0.3"
-reqwest = {version = "0.10.8", features = ["blocking"]}
+reqwest = {version = "0.10.8", features = ["blocking", "json"]}
 diesel = { version = "1.4.4", features = ["postgres", "uuidv07", "r2d2", "chrono"] }
 dotenv = "0.15.0"
 futures = "0.3.1"
 r2d2 = "0.8.8"
 serde = "1.0"
+actix-cors = "0.5.1"
+derive_more = "0.99.11"
 serde_derive = "1.0"
 serde_json = "1.0"
 actix-service = "1.0.1"
-alcoholic_jwt = "1.0.0"
 actix-rt = "1.0.0"
 chrono = {version = "0.4.0", features = ["serde"]}
 env_logger = "0.8.1"

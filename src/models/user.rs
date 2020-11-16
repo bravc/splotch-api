@@ -17,6 +17,7 @@ pub struct User {
     pub email: String,
     #[serde(skip_serializing)]
     pub pass_hash: String,
+    pub spotify_refresh: Option<String>,
     pub created_at: NaiveDateTime,
 }
 
@@ -43,7 +44,9 @@ impl FromRequest for User {
             match cred {
                 Ok(token) => match user_dsl.find(token.claims.sub).first(&conn) {
                     Ok(user) => ok(user),
-                    Err(e) => err(HttpResponse::InternalServerError().body(e.to_string()).into()),
+                    Err(e) => err(HttpResponse::InternalServerError()
+                        .body(e.to_string())
+                        .into()),
                 },
                 Err(e) => err(HttpResponse::Unauthorized().body(e.to_string()).into()),
             }

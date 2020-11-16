@@ -1,59 +1,38 @@
-// use actix_web::{error::ResponseError, http::StatusCode, HttpResponse};
-// use serde::Serialize;
-// use std::fmt;
+use actix_web::http::StatusCode;
+use actix_web::{dev::HttpResponseBuilder, http::header, HttpResponse, ResponseError};
+use derive_more::{Display, Error};
 
-// #[derive(Debug)]
-// pub enum AppErrorType {
-//     DbError,
-//     NotFoundError,
-// }
+#[derive(Debug, Display, Error)]
+pub enum SplotchError {
+    #[display(fmt = "internal error")]
+    InternalError,
 
-// #[derive(Debug)]
-// pub struct AppError {
-//     pub message: Option<String>,
-//     pub cause: Option<String>,
-//     pub error_type: AppErrorType,
-// }
+//     #[display(fmt = "bad request")]
+//     BadClientData,
 
-// impl AppError {
-//     pub fn message(&self) -> String {
-//         match &*self {
-//             AppError {
-//                 message: Some(message),
-//                 ..
-//             } => message.clone(),
-//             AppError {
-//                 message: None,
-//                 error_type: AppErrorType::NotFoundError,
-//                 ..
-//             } => "The requested item was not found".to_string(),
-//             _ => "An unexpected error has occurred".to_string(),
-//         }
-//     }
-// }
+//     #[display(fmt = "timeout")]
+//     Timeout,
+}
 
+impl ResponseError for SplotchError {
+    fn error_response(&self) -> HttpResponse {
+        HttpResponseBuilder::new(self.status_code())
+            .set_header(header::CONTENT_TYPE, "text/html; charset=utf-8")
+            .body(self.to_string())
+    }
 
-// impl fmt::Display for AppError {
-//     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {
-//         write!(f, "{:?}", self)
-//     }
-// }
+    fn status_code(&self) -> StatusCode {
+        match *self {
+            SplotchError::InternalError => StatusCode::INTERNAL_SERVER_ERROR,
+            // SplotchError::BadClientData => StatusCode::BAD_REQUEST,
+            // SplotchError::Timeout => StatusCode::GATEWAY_TIMEOUT,
+        }
+    }
+}
 
-// #[derive(Serialize)]
-// pub struct AppErrorResponse {
-//     pub error: String,
-// }
-
-// impl ResponseError for AppError {
-//     fn status_code(&self) -> StatusCode {
-//         match self.error_type {
-//             AppErrorType::DbError => StatusCode::INTERNAL_SERVER_ERROR,
-//             AppErrorType::NotFoundError => StatusCode::NOT_FOUND,
-//         }
-//     }
-//     fn error_response(&self) -> HttpResponse {
-//         HttpResponse::build(self.status_code()).json(AppErrorResponse {
-//             error: self.message(),
-//         })
-//     }
-// }
+impl From<reqwest::Error> for SplotchError {
+    fn from(e: reqwest::Error) -> Self {
+        log::error!("{}", e);
+        SplotchError::InternalError
+    }
+}

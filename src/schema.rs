@@ -14,10 +14,14 @@ table! {
         username -> Varchar,
         email -> Varchar,
         pass_hash -> Varchar,
+        spotify_refresh -> Nullable<Varchar>,
         created_at -> Timestamp,
     }
 }
 
 joinable!(posts -> users (user_id));
 
-allow_tables_to_appear_in_same_query!(posts, users,);
+allow_tables_to_appear_in_same_query!(
+    posts,
+    users,
+);

@@ -13,3 +13,17 @@ pub struct Post {
     pub content: String,
     pub created_at: NaiveDateTime,
 }
+
+#[derive(Insertable, Debug)]
+#[table_name = "posts"]
+pub struct NewPost<'a> {
+    pub user_id: i32,
+    pub title: &'a str,
+    pub content: &'a str,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct InputPost {
+    pub title: String,
+    pub content: String,
+}

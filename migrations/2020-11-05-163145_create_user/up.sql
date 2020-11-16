@@ -4,5 +4,6 @@ CREATE TABLE users (
   username VARCHAR NOT NULL UNIQUE,
   email VARCHAR NOT NULL UNIQUE,
   pass_hash VARCHAR NOT NULL,
+  spotify_refresh VARCHAR,
   created_at TIMESTAMP NOT NULL DEFAULT NOW()
 )
