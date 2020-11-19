@@ -1,9 +1,11 @@
 table! {
-    posts (id) {
+    snippets (id) {
         id -> Int4,
         user_id -> Int4,
         title -> Varchar,
-        content -> Varchar,
+        timestamp_start -> Int4,
+        timestamp_end -> Int4,
+        track_uri -> Varchar,
         created_at -> Timestamp,
     }
 }
@@ -19,9 +21,9 @@ table! {
     }
 }
 
-joinable!(posts -> users (user_id));
+joinable!(snippets -> users (user_id));
 
 allow_tables_to_appear_in_same_query!(
-    posts,
+    snippets,
     users,
 );

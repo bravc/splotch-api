@@ -10,7 +10,7 @@ use jsonwebtoken::{decode, DecodingKey, Validation};
 use log::debug;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, Identifiable, Queryable)]
+#[derive(Debug, Serialize, Deserialize, Identifiable, Queryable, Clone)]
 pub struct User {
     pub id: i32,
     pub username: String,

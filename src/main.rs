@@ -19,6 +19,7 @@ mod controllers;
 mod errors;
 mod models;
 mod schema;
+mod services;
 
 pub type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
@@ -78,11 +79,12 @@ async fn main() -> std::io::Result<()> {
                     .service(controllers::user_controller::get_user)
                     .service(controllers::auth_controller::me)
                     .service(controllers::user_controller::delete_user)
-                    .service(controllers::post_controller::get_posts)
-                    .service(controllers::post_controller::create_post)
                     .service(controllers::spotify_controller::top)
                     .service(controllers::spotify_controller::recent)
-                    .service(controllers::spotify_controller::fresh),
+                    .service(controllers::spotify_controller::fresh)
+                    .service(controllers::spotify_controller::snippet_create)
+                    .service(controllers::spotify_controller::snippet_get_all)
+                    .service(controllers::spotify_controller::me),
             )
             .wrap(cors)
             .data(pool.clone())

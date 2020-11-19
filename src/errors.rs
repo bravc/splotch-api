@@ -36,3 +36,10 @@ impl From<reqwest::Error> for SplotchError {
         SplotchError::InternalError
     }
 }
+
+impl From<diesel::result::Error> for SplotchError {
+    fn from(e: diesel::result::Error) -> Self {
+        log::error!("{}", e);
+        SplotchError::InternalError
+    }
+}

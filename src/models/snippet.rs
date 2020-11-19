@@ -1,29 +1,34 @@
 use crate::models::user::User;
-use crate::schema::posts;
+use crate::schema::snippets;
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
 #[derive(Identifiable, Queryable, Deserialize, Serialize, Associations, PartialEq, Debug)]
 #[belongs_to(User)]
-#[table_name = "posts"]
-pub struct Post {
+pub struct Snippet {
     pub id: i32,
     pub user_id: i32,
     pub title: String,
-    pub content: String,
+    pub timestamp_start: i32,
+    pub timestamp_end: i32,
+    pub track_uri: String,
     pub created_at: NaiveDateTime,
 }
 
 #[derive(Insertable, Debug)]
-#[table_name = "posts"]
-pub struct NewPost<'a> {
+#[table_name = "snippets"]
+pub struct NewSnippet<'a> {
     pub user_id: i32,
     pub title: &'a str,
-    pub content: &'a str,
+    pub track_uri: &'a str,
+    pub timestamp_start: i32,
+    pub timestamp_end: i32,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct InputPost {
+pub struct InputSnippet {
     pub title: String,
-    pub content: String,
+    pub track_uri: String,
+    pub timestamp_start: i32,
+    pub timestamp_end: i32,
 }
