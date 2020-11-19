@@ -2,7 +2,7 @@ table! {
     snippets (id) {
         id -> Int4,
         user_id -> Int4,
-        title -> Varchar,
+        name -> Varchar,
         timestamp_start -> Int4,
         timestamp_end -> Int4,
         track_uri -> Varchar,

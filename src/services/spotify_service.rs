@@ -61,7 +61,7 @@ pub async fn create_snippet(
 ) -> Result<Snippet, SplotchError> {
     let input = NewSnippet {
         user_id: user.id,
-        title: &new_snippet.title,
+        name: &new_snippet.name,
         track_uri: &new_snippet.track_uri,
         timestamp_end: new_snippet.timestamp_end,
         timestamp_start: new_snippet.timestamp_start,

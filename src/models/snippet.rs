@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 pub struct Snippet {
     pub id: i32,
     pub user_id: i32,
-    pub title: String,
+    pub name: String,
     pub timestamp_start: i32,
     pub timestamp_end: i32,
     pub track_uri: String,
@@ -19,7 +19,7 @@ pub struct Snippet {
 #[table_name = "snippets"]
 pub struct NewSnippet<'a> {
     pub user_id: i32,
-    pub title: &'a str,
+    pub name: &'a str,
     pub track_uri: &'a str,
     pub timestamp_start: i32,
     pub timestamp_end: i32,
@@ -27,7 +27,7 @@ pub struct NewSnippet<'a> {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct InputSnippet {
-    pub title: String,
+    pub name: String,
     pub track_uri: String,
     pub timestamp_start: i32,
     pub timestamp_end: i32,
