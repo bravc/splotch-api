@@ -46,9 +46,7 @@ pub struct Album {
 #[derive(Deserialize, Serialize)]
 pub struct Playlist {
     pub id: String,
-    pub images: Vec<Image>,
     pub name: String,
-    pub user: SpotUser,
     pub tracks: TopTracks,
     pub uri: String,
 }
@@ -71,8 +69,19 @@ pub struct RecentlyPlayed {
 #[derive(Deserialize, Serialize)]
 pub struct SpotUser {
     pub images: Vec<Image>,
+    pub id: String,
     pub display_name: String,
     pub email: String
+}
+
+impl SpotUser {
+    pub fn profile_if_exists(&self) -> &str {
+        if self.images.len() > 0 {
+            &self.images.get(0).unwrap().url
+        } else {
+            ""
+        }
+    }
 }
 
 impl FreshToken {

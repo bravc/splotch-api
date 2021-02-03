@@ -1,4 +1,4 @@
-use crate::schema::snippets::dsl::*;
+use crate::{models::spotify::SpotUser, schema::snippets::dsl::*};
 use crate::{controllers::db_utils, Pool};
 use actix_web::{web};
 use reqwest::Client;
@@ -18,13 +18,18 @@ struct PlaylistInput {
     pub name: String,
 }
 
+#[derive(Serialize)]
+struct AddToPlaylistInput<'a> {
+    pub uris: &'a Vec<&'a str>,
+}
+
 pub async fn create_playlist(user: &User, playlist_name: &str) -> Result<Playlist, SplotchError> {
     let token = FreshToken::from_user(&user).await;
     let client = Client::new();
     let res = client
         .post(&format!(
             "https://api.spotify.com/v1/users/{}/playlists",
-            user.id
+            user.spotify_id.as_ref().unwrap()
         ))
         .bearer_auth(&token.access_token)
         .json(&PlaylistInput {
@@ -39,19 +44,21 @@ pub async fn add_to_playlist(
     user: &User,
     playlist_id: String,
     track_uris: &Vec<&str>,
-) -> Result<Playlist, SplotchError> {
+) -> Result<String, SplotchError> {
     let token = FreshToken::from_user(&user).await;
     let client = Client::new();
-    let res = client
+    client
         .post(&format!(
             "https://api.spotify.com/v1/playlists/{}/tracks",
             playlist_id
         ))
         .bearer_auth(token.access_token)
-        .json(track_uris)
+        .json(&AddToPlaylistInput {
+            uris: track_uris
+        })
         .send()
         .await?;
-    Ok(res.json::<Playlist>().await?)
+    Ok(String::from("Playlist added to."))
 }
 
 pub async fn create_snippet(
@@ -78,4 +85,18 @@ pub async fn get_snippets(
     let conn = pool.get().unwrap();
 
     Ok(db_utils::get_all(&conn, snippets)?)
+}
+
+pub async fn get_user_info(
+    user: &User,
+) -> Result<SpotUser, SplotchError> {
+    let token = FreshToken::from_user(&user).await;
+    let client = Client::new();
+    let res = client
+        .get("https://api.spotify.com/v1/me")
+        .bearer_auth(token.access_token)
+        .send()
+        .await?;
+    
+    Ok(res.json::<SpotUser>().await?)
 }

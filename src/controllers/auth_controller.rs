@@ -1,9 +1,9 @@
-use crate::controllers::db_utils;
-use crate::diesel::ExpressionMethods;
+use crate::{diesel::ExpressionMethods, models::spotify::SpotUser};
 use crate::diesel::{QueryDsl, RunQueryDsl};
 use crate::models::user::{Claims, InputAuth, InputUser, NewUser, User};
 use crate::schema::users::dsl::*;
 use crate::Pool;
+use crate::controllers::db_utils;
 use actix_web::web::Query;
 use actix_web::{get, post, web, Error, HttpResponse, Responder};
 use bcrypt::{hash, verify, DEFAULT_COST};
@@ -76,15 +76,30 @@ pub async fn spot_auth(
 					log::error!("{:?}", r);
 					if r.status() == 200 {
 						let auth = r.json::<SpotifyAuthResponse>().await;
-						auth.map(|spot_auth| {
-							let user_id: i32 = params.state.parse().unwrap();
-							let user = users.find(user_id).first::<User>(&conn).unwrap();
-							let _ = update(&user)
-								.set(spotify_refresh.eq(spot_auth.refresh_token))
-								.get_result::<User>(&conn);
-							HttpResponse::Found().set_header("Location", frontend_url).finish()
-						})
-						.map_err(|err| HttpResponse::Unauthorized().body(err.to_string()))
+						match auth {
+							Ok(spot_auth) => {
+								let user_id: i32 = params.state.parse().unwrap();
+								let user = users.find(user_id).first::<User>(&conn).unwrap();
+								let spot_user: SpotUser = client
+									.get("https://api.spotify.com/v1/me")
+									.bearer_auth(spot_auth.access_token)
+									.send()
+									.await
+									.unwrap()
+            						.json::<SpotUser>().await.unwrap();
+								let _ = update(&user)
+									.set((
+										spotify_refresh.eq(spot_auth.refresh_token), 
+										spotify_id.eq(&spot_user.id),
+										profile_url.eq(spot_user.profile_if_exists())
+									))
+									.get_result::<User>(&conn);
+								Ok(HttpResponse::Found()
+									.set_header("Location", frontend_url)
+									.finish())
+							}
+							Err(e) => Err(HttpResponse::Unauthorized().body(e.to_string()))
+						}
 					} else {
 						Err(HttpResponse::Unauthorized().body(r.text().await.unwrap()))
 					}

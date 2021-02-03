@@ -18,6 +18,8 @@ pub struct User {
     #[serde(skip_serializing)]
     pub pass_hash: String,
     pub spotify_refresh: Option<String>,
+    pub spotify_id: Option<String>,
+    pub profile_url: Option<String>,
     pub created_at: NaiveDateTime,
 }
 

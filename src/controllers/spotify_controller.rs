@@ -1,10 +1,13 @@
-use crate::{Pool, models::{snippet::InputSnippet, spotify::RecentlyPlayed}};
 use crate::models::spotify::TopTracks;
 use crate::models::{
-    spotify::{FreshToken, SpotUser, Track},
+    spotify::{FreshToken, SpotUser},
     user::User,
 };
 use crate::{errors::SplotchError, services::spotify_service};
+use crate::{
+    models::{snippet::InputSnippet, spotify::RecentlyPlayed},
+    Pool,
+};
 
 use actix_web::post;
 use actix_web::{
@@ -14,6 +17,7 @@ use actix_web::{
 };
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
+
 #[derive(Deserialize, Serialize)]
 pub struct TopQueryParams {
     time_range: String,
@@ -22,14 +26,14 @@ pub struct TopQueryParams {
 #[derive(Deserialize, Serialize)]
 pub struct CreatePlaylistInput {
     name: String,
-    tracks: Vec<Track>,
+    tracks: Vec<String>,
 }
 
 impl CreatePlaylistInput {
     pub fn to_uris(&self) -> Vec<&str> {
         let mut uris: Vec<&str> = Vec::new();
         for track in &self.tracks {
-            uris.push(track.uri.as_str())
+            uris.push(track.as_str())
         }
         uris
     }

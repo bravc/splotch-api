@@ -17,6 +17,8 @@ table! {
         email -> Varchar,
         pass_hash -> Varchar,
         spotify_refresh -> Nullable<Varchar>,
+        spotify_id -> Nullable<Varchar>,
+        profile_url -> Nullable<Varchar>,
         created_at -> Timestamp,
     }
 }

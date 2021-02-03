@@ -84,6 +84,7 @@ async fn main() -> std::io::Result<()> {
                     .service(controllers::spotify_controller::fresh)
                     .service(controllers::spotify_controller::snippet_create)
                     .service(controllers::spotify_controller::snippet_get_all)
+                    .service(controllers::spotify_controller::playlist)
                     .service(controllers::spotify_controller::me),
             )
             .wrap(cors)
